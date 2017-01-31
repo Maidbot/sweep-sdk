@@ -1,19 +1,19 @@
 include config.mk
 
-#all: libsweep.so
-all: libsweep.dll
+all: $(target)
 
 print:
 	echo CC=$(CC) CFLAGS=$(CFLAGS)
 
-#libsweep.so: sweep.o protocol.o serial_unix.o time_unix.o
-#	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+libsweep.so: sweep.o protocol.o serial_unix.o time_unix.o
+	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 libsweep.dll: sweep.o protocol.o serial_win.o time_win.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-#dummy: dummy.o time_unix.o
-dummy: dummy.o time_win.o
+dummy: dummy.o time_unix.o
+	$(CC) $(LDFLAGS) -o libsweep.so $^ $(LDLIBS)
+dummy_win: dummy.o time_win.o
 	$(CC) $(LDFLAGS) -o libsweep.so $^ $(LDLIBS)
 
 install:
