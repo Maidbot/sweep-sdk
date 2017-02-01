@@ -31,6 +31,7 @@ ifeq ($(UNAME), Linux)
   target = $(BIN_DIR)/libsweep.so
   SRC_ARCH_DIR := src/arch/unix
   PREFIX ?= /usr
+  LINKER = cc
   CFLAGS += -O2 -Wall -Wextra -pedantic -std=c99 -Wnonnull -fvisibility=hidden -fPIC -pthread
   LDFLAGS += -shared -Wl,-soname,libsweep.so.$(VERSION_MAJOR)
   LDLIBS += -lpthread

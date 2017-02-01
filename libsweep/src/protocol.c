@@ -188,8 +188,6 @@ void sweep_protocol_read_response_scan(sweep_serial_device_s serial, sweep_proto
   sweep_serial_device_read(serial, scan, sizeof(sweep_protocol_response_scan_packet_s), &serialerror);
 
   if (serialerror) {
-    printf("Received scan packet: %s\n", scan);
-    printf("unable to read scan response packet");
     *error = sweep_protocol_error_construct("unable to read scan response packet");
     sweep_serial_error_destruct(serialerror);
     return;
@@ -198,11 +196,6 @@ void sweep_protocol_read_response_scan(sweep_serial_device_s serial, sweep_proto
   uint8_t checksum = sweep_protocol_checksum_response_scan_packet(scan);
 
   if (checksum != scan->checksum) {
-    printf("\nReceived scan packet:\n");
-    for (int i = 0; i < 7; i++) {
-      printf("%d,", (uint8_t) (*((char*)scan + i)));
-    }
-    printf("invalid scan response (checksum failed)\n");
     *error = sweep_protocol_error_construct("invalid scan response (checksum failed)");
     return;
   }

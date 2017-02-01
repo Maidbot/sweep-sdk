@@ -9,7 +9,7 @@ find_path(LIBSWEEP_INCLUDE_DIR
           sweep/sweep.h sweep/sweep.hpp)
 
 find_library(LIBSWEEP_LIBRARY
-             NAMES libsweep
+             NAMES libsweep sweep
              HINTS "${LIBSWEEP_LIBRARY_DIR}")
 
 

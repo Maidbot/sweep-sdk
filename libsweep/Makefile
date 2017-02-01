@@ -12,13 +12,15 @@ buildOutputDirs:
 	$(MKDIR_P) $(BIN_DIR)
 	$(MKDIR_P) $(OBJ_ARCH_DIR)
 
+# sweep library dll
+$(BIN_DIR)/libsweep.dll: $(OBJ_FILES)
+	$(LINKER) $(CFLAGS) $(LDFLAGS) $^ -o $@ 
+
 # sweep library .so
 #libsweep.so: sweep.o protocol.o serial_unix.o time_unix.o
 #	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
-
-# sweep library dll
-$(BIN_DIR)/libsweep.dll: $(OBJ_FILES)
-	$(LINKER)  $(CFLAGS) $(LDFLAGS) $^ -o $@ 
+$(BIN_DIR)/libsweep.so: $(OBJ_FILES)
+	$(LINKER) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 	
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INC_DIRS) -c $< -o $@
@@ -29,13 +31,13 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 #	$(CC) $(LDFLAGS) -o libsweep.so $^
 
 install:
-	$(MKDIR_P) $(PREFIX)\include\sweep
-	install -m 0644 $(INC_DIR)\sweep.h $(PREFIX)\include\sweep
-	install -m 0644 $(INC_DIR)\sweep.hpp $(PREFIX)\include\sweep
-	$(MKDIR_P) $(PREFIX)\bin
+	$(MKDIR_P) $(PREFIX)/include/sweep
+	install -m 0644 $(INC_DIR)/sweep.h $(PREFIX)/include\sweep
+	install -m 0644 $(INC_DIR)/sweep.hpp $(PREFIX)/include\sweep
+	$(MKDIR_P) $(PREFIX)/bin
 	install -m 0644 $(target) $(PREFIX)\bin
-	ln -sf $(PREFIX)\bin\libsweep.dll $(PREFIX)\bin\libsweep.dll.$(VERSION_MAJOR)
-	ln -sf $(PREFIX)\bin\libsweep.dll $(PREFIX)\bin\libsweep.dll.$(VERSION_MAJOR).$(VERSION_MINOR)
+	ln -sf $(PREFIX)/bin/libsweep.dll $(PREFIX)/bin/libsweep.dll.$(VERSION_MAJOR)
+	ln -sf $(PREFIX)/bin/libsweep.dll $(PREFIX)/bin/libsweep.dll.$(VERSION_MAJOR).$(VERSION_MINOR)
 
 watch:
 	while ! inotifywait -e modify *.c *.h; do make; done
