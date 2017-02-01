@@ -52,7 +52,7 @@ void sweep_error_destruct(sweep_error_s error) {
 sweep_device_s sweep_device_construct_simple(sweep_error_s* error) {
   SWEEP_ASSERT(error);
 
-  //return sweep_device_construct("/dev/ttyUSB0", 115200, error);
+  // return sweep_device_construct("/dev/ttyUSB0", 115200, error);
   return sweep_device_construct("COM5", 115200, error);
 }
 

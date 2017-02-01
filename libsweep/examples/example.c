@@ -55,12 +55,12 @@ int main() {
     // In case you're doing expensive work here consider using a decoupled producer / consumer pattern.
     for (int32_t n = 0; n < sweep_scan_get_number_of_samples(scan); ++n) {
       int32_t angle = sweep_scan_get_angle(scan, n);
+      float angle_deg = angle / 1000.f;
       int32_t distance = sweep_scan_get_distance(scan, n);
       int32_t signal = sweep_scan_get_signal_strength(scan, n);
 
-      if (n < 3 || n > sweep_scan_get_number_of_samples(scan) - 4 )
-        fprintf(stdout, "Angle %" PRId32 ", Distance %" PRId32 ", Signal Strength: %" PRId32 "\n", angle, distance, signal);
-
+      if (n < 3 || n > sweep_scan_get_number_of_samples(scan) - 4)
+        fprintf(stdout, "Angle %f, Distance %" PRId32 ", Signal Strength: %" PRId32 "\n", angle_deg, distance, signal);
     }
 
     // Cleanup scan response
