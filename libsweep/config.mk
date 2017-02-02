@@ -28,7 +28,8 @@ endif
 # Set Options & Flags by Operating System
 ifeq ($(UNAME), Linux)
   # For linux platforms
-  target = $(BIN_DIR)/libsweep.so
+  target = libsweep.so
+  dummy_target = dummy_linux
   SRC_ARCH_DIR := src/arch/unix
   PREFIX ?= /usr
   LINKER = cc
@@ -40,7 +41,8 @@ else ifeq ($(UNAME), Darwin)
   $(error macOS build system support missing)
 else ifeq ($(UNAME), MINGW)
   # For win platforms using MinGW
-  target = $(BIN_DIR)/libsweep.dll
+  target = libsweep.dll
+  dummy_target = dummy_win
   SRC_ARCH_DIR := src/arch/win
   PREFIX ?= C:\MinGW
   CC = gcc
@@ -51,6 +53,9 @@ else
   # For all other platforms
   $(error system not supported)
 endif
+
+# Specify the target path
+target_path = $(BIN_DIR)/$(target)
 
 # Specify compiler should look in the inc directory for user-written header files
 INC_DIRS := -I$(INC_DIR)
@@ -63,6 +68,12 @@ OBJ_ARCH_DIR = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%, $(SRC_ARCH_DIR))
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
 SRC_FILES += $(wildcard $(SRC_ARCH_DIR)/*.c)
 
+# remove the dummy file from the src files, and add it to its own variable
+SRC_FILES := $(filter-out $(SRC_DIR)/dummy.c, $(SRC_FILES))
+DUMMY_SRC_FILES := $(SRC_DIR)/dummy.c $(wildcard $(SRC_ARCH_DIR)/time_*.c)
+
+
 # Then specify the obj files according to the structure of src 
 # ie: (src/arch/win/file_win.c -> obj/arch/win/file_win.o)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
+DUMMY_OBJ_FILES := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(DUMMY_SRC_FILES))
