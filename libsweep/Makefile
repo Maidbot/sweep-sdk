@@ -1,44 +1,37 @@
 include config.mk
 
-
-#all: $(target)
-all: buildOutputDirs $(target_path)
+all: buildOutputDirs $(BIN_DIR)/$(target)
 
 print:
 	echo CC=$(CC) CFLAGS=$(CFLAGS)
 
-# creates the output directories for the generated files
+# Creates the output directories for the generated files
 buildOutputDirs:
 	$(MKDIR_P) $(BIN_DIR)
 	$(MKDIR_P) $(OBJ_ARCH_DIR)
 
-# sweep library dll
-$(BIN_DIR)/libsweep.dll: $(OBJ_FILES)
-	$(LINKER) $(CFLAGS) $(LDFLAGS) $^ -o $@ 
-
-# sweep library .so
-$(BIN_DIR)/libsweep.so: $(OBJ_FILES)
+# Sweep library .dll or .so (encoded by $(target))
+$(BIN_DIR)/$(target): $(OBJ_FILES)
 	$(LINKER) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LDLIBS)
-	
+
+# Object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INC_DIRS) -c $< -o $@
 
-dummy: buildOutputDirs $(dummy_target)
+# Create the output directories, and then build the dummy
+dummy: buildOutputDirs dummy_build
 
-dummy_linux: $(DUMMY_OBJ_FILES)
-	$(LINKER) $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/libsweep.so $^ $(LDLIBS)
-
-#dummy_win:  $(DUMMY_OBJ_FILES)
-#	$(LINKER) $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/libsweep.dll $^
+dummy_build: $(DUMMY_OBJ_FILES)
+	$(LINKER) $(CFLAGS) $(LDFLAGS) -o $(BIN_DIR)/$(target) $^ $(LDLIBS)
 
 install:
-	$(MKDIR_P) $(PREFIX)/include/sweep
-	install -m 0644 $(INC_DIR)/sweep.h $(PREFIX)/include/sweep
-	install -m 0644 $(INC_DIR)/sweep.hpp $(PREFIX)/include/sweep
-	$(MKDIR_P) $(PREFIX)/bin
-	install -m 0644 $(target_path) $(PREFIX)/bin
-	ln -sf $(PREFIX)/bin/$(target) $(PREFIX)/bin/$(target).$(VERSION_MAJOR)
-	ln -sf $(PREFIX)/bin/$(target) $(PREFIX)/bin/$(target).$(VERSION_MAJOR).$(VERSION_MINOR)
+	$(MKDIR_P) $(INSTALL_DIR_INCLUDES)
+	install -m 0644 $(INC_DIR)/sweep.h $(INSTALL_DIR_INCLUDES)
+	install -m 0644 $(INC_DIR)/sweep.hpp $(INSTALL_DIR_INCLUDES)
+	$(MKDIR_P) $(INSTALL_DIR_LIB)
+	install -m 0644 $(BIN_DIR)/$(target) $(INSTALL_DIR_LIB)
+	ln -sf $(INSTALL_DIR_LIB)/$(target) $(INSTALL_DIR_LIB)/$(target).$(VERSION_MAJOR)
+	ln -sf $(INSTALL_DIR_LIB)/$(target) $(INSTALL_DIR_LIB)/$(target).$(VERSION_MAJOR).$(VERSION_MINOR)
 
 watch:
 	while ! inotifywait -e modify *.c *.h; do make; done

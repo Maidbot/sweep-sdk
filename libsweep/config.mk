@@ -31,7 +31,8 @@ ifeq ($(UNAME), Linux)
   target = libsweep.so
   dummy_target = dummy_linux
   SRC_ARCH_DIR := src/arch/unix
-  PREFIX ?= /usr
+  INSTALL_DIR_LIB ?= /usr/lib
+  INSTALL_DIR_INCLUDES ?= /usr/include/sweep
   LINKER = cc
   CFLAGS += -O2 -Wall -Wextra -pedantic -std=c99 -Wnonnull -fvisibility=hidden -fPIC -pthread
   LDFLAGS += -shared -Wl,-soname,libsweep.so.$(VERSION_MAJOR)
@@ -44,7 +45,8 @@ else ifeq ($(UNAME), MINGW)
   target = libsweep.dll
   dummy_target = dummy_win
   SRC_ARCH_DIR := src/arch/win
-  PREFIX ?= C:\MinGW
+  INSTALL_DIR_LIB ?= C:/MinGW/bin
+  INSTALL_DIR_INCLUDES ?= C:/MinGW/include/sweep
   CC = gcc
   LINKER = gcc
   CFLAGS += -O2 -Wall -Wextra -pedantic -std=c99 -Wnonnull -fvisibility=hidden -mno-ms-bitfields
@@ -53,9 +55,6 @@ else
   # For all other platforms
   $(error system not supported)
 endif
-
-# Specify the target path
-target_path = $(BIN_DIR)/$(target)
 
 # Specify compiler should look in the inc directory for user-written header files
 INC_DIRS := -I$(INC_DIR)
