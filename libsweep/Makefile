@@ -17,8 +17,6 @@ $(BIN_DIR)/libsweep.dll: $(OBJ_FILES)
 	$(LINKER) $(CFLAGS) $(LDFLAGS) $^ -o $@ 
 
 # sweep library .so
-#libsweep.so: sweep.o protocol.o serial_unix.o time_unix.o
-#	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 $(BIN_DIR)/libsweep.so: $(OBJ_FILES)
 	$(LINKER) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 	
