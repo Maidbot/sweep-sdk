@@ -16,7 +16,7 @@ To build:
     # generate the make file (assumes you are using MSYS terminal for MinGW)
     cmake -G "MSYS Makefiles" .. 
     # run the makefile
-    make
+    cmake --build .
 ```
 
 **Note:** running the example requires the `libsweep.dll` be installed (ex: `C:\MinGW\bin`), or at least placed in the same directory as the executable (`examples\build`).
