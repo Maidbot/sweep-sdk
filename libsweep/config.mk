@@ -45,7 +45,7 @@ else ifeq ($(UNAME), MINGW)
   PREFIX ?= C:\MinGW
   CC = gcc
   LINKER = gcc
-  CFLAGS += -O2 -Wall -Wextra -pedantic -std=c99 -Wnonnull -fvisibility=hidden -fPIC -mno-ms-bitfields
+  CFLAGS += -O2 -Wall -Wextra -pedantic -std=c99 -Wnonnull -fvisibility=hidden -mno-ms-bitfields
   LDFLAGS += -shared -Wl,-soname,libsweep.dll.$(VERSION_MAJOR)
 else
   # For all other platforms
