@@ -200,17 +200,38 @@ sweep_scan_s sweep_device_get_scan(sweep_device_s device, sweep_error_s* error) 
       return NULL;
     }
 
-    // Only gather a full scan. We could improve this logic to improve on throughput
-    // with complicating the code much more (think spsc queue of all responses).
-    // On the other hand, we could also discard the sync bit and check repeating angles.
-    if (responses[received].sync_error == 1) {
-      if (first != 0 && last == SWEEP_MAX_SAMPLES) {
+    // Current behavior:
+    // return a scan consisting of the sensor readings acquired...
+    // --> after this method invocation
+    // --> before the next encountered sync reading
+
+    // Exception: If the first encountered reading is a sync reading,
+    // include it and proceed until the 2nd sync reading
+
+    // check that the error bits (e0-6) are all 0 (ie: NO ERRORS for this reading)
+    if (!(responses[received].sync_error >> 1)) {
+
+      // Check if DATA_BLOCK is a sync reading (ie: first reading of a new 360deg scan)
+      // & if we've already been gathering DATA_BLOCKs
+      if (responses[received].sync_error == 1 && received > 0) {
+        // Note the end of the scan
         last = received;
+        // FIXME: add check that "last" does not exceed SWEEP_MAX_SAMPLES
+
+        // BREAK to return the scan (NOT including this DATA_BLOCK)
         break;
       }
-
-      if (first == 0 && last == SWEEP_MAX_SAMPLES) {
-        first = received;
+    } else {
+      // Handle non-zero error code and shutdown gracefully if need be.
+      switch (responses[received].sync_error >> 1) {
+      case 1: // Communication Error w/ LiDAR module for THIS reading only
+        // Data acquisition CONTINUES, but don't include this reading
+        received--;
+        break;
+      default: // (currently) unknown or unsupported errors
+        // Data acquisition should STOP, report the error and shutdown
+        *error = sweep_error_construct("scan packet contained an unexpected error");
+        return NULL;
       }
     }
   }
